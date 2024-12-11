@@ -1,0 +1,45 @@
+# Virtual Environment
+.venv/
+venv/
+ENV/
+
+# JSON files
+*.json
+
+# YAML files
+*.yaml
+*.yml
+
+# Parquet files
+*.parquet
+
+# CSV files
+*.csv
+
+# Excl files
+*.xlsx
+
+# Python cache files
+__pycache__/
+*.py[cod]
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+*.db
+*duckdb

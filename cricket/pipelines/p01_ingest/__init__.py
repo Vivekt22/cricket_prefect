@@ -1,0 +1,1 @@
+from cricket.pipelines.p01_ingest.ingest import ingest_raw_data
