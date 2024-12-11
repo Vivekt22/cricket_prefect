@@ -16,6 +16,30 @@ def create_cricket_dataset(
     df_people_raw: pl.LazyFrame | None = None,
     df_team_league_mapping: pl.LazyFrame | None = None,
 ) -> pl.LazyFrame:
+    """
+    Compiles and integrates various data sources to construct a comprehensive cricket dataset.
+
+    This flow synthesizes data from deliveries, match information, player registries, and additional sources to create 
+    an enriched and holistic dataset. This dataset is aimed at providing deep insights into game strategies, player performances, 
+    and historical data comparisons which can be used for advanced analytics and reporting.
+
+    Parameters:
+        df_deliveries (pl.LazyFrame | None): Preprocessed data frame of delivery information; if None, it's loaded from disk.
+        df_match_info (pl.LazyFrame | None): Preprocessed match information data; if None, it's loaded from disk.
+        df_registry (pl.LazyFrame | None): Preprocessed player registry data; if None, it's loaded from disk.
+        df_cricinfo_people (pl.LazyFrame | None): Data frame containing people information from Cricinfo; if None, loaded from CSV.
+        df_people_raw (pl.LazyFrame | None): Raw people data; if None, loaded from CSV.
+        df_team_league_mapping (pl.LazyFrame | None): Data frame mapping teams to leagues; if None, loaded from CSV.
+
+    Returns:
+        pl.LazyFrame: A comprehensive LazyFrame that includes combined and refined data from all sources,
+                      structured for analytical purposes.
+
+    Notes:
+        The function handles data loading, integration, transformation, and computation to produce a dataset that reflects
+        current and accurate match details, player statistics, and other relevant information.
+        The final dataset is persisted back to disk for use in downstream applications.
+    """
     if df_deliveries is None:
         df_deliveries = pl.scan_parquet(Conf.catalog.preprocessed.deliveries)
     if df_match_info is None:

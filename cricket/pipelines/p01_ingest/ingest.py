@@ -1,4 +1,5 @@
 import polars as pl
+
 from prefect import flow
 
 from cricket.conf.conf import Conf
@@ -6,7 +7,11 @@ from cricket.functions.functions import Functions as F
 
 
 @flow
-def download_raw_files() -> pl.LazyFrame:
+def download_raw_files() -> pl.LazyFrame|None:
+    """
+    Downloads new raw match data from remote sources and saves it to a designated local directory.
+    Ensures data is ready for preprocessing by extracting and organizing files appropriately.
+    """
     F.empty_data_folder(folder=Conf.catalog.dump.yaml_dir, file_types=["yaml", "txt"])
 
     F.extract_zip_file_from_url(
@@ -26,6 +31,11 @@ def download_raw_files() -> pl.LazyFrame:
 
 @flow
 def remove_old_dump_files() -> pl.LazyFrame:
+    """
+    Removes old files from the dump directory that have been processed and stored in the raw directory.
+    Prevents reprocessing of data that has already been handled, maintaining data cleanliness.
+    This cleanup helps manage storage efficiently and ensures only new data is processed.
+    """
     dump_yaml_dir = Conf.catalog.dump.yaml_dir
     raw_yaml_dir = Conf.catalog.raw.yaml_dir
 
@@ -50,7 +60,7 @@ def remove_old_dump_files() -> pl.LazyFrame:
 
 
 @flow(name="ingest_flow")
-def ingest_raw_data():
+def ingest_raw_data() -> pl.LazyFrame:
     download_raw_files()
     df_new_dump_files = remove_old_dump_files()
     return df_new_dump_files

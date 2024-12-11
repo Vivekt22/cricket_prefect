@@ -3,6 +3,9 @@
 venv/
 ENV/
 
+# TXT Files
+*README.txt
+
 # JSON files
 *.json
 
