@@ -1,7 +1,5 @@
-from pathlib import Path
-
 import polars as pl
-from prefect import flow, task
+from prefect import flow
 
 from cricket.conf.conf import Conf
 from cricket.functions.functions import Functions as F
@@ -9,27 +7,22 @@ from cricket.functions.functions import Functions as F
 
 @flow
 def download_raw_files() -> pl.LazyFrame:
-    F.empty_data_folder(
-        folder=Conf.catalog.dump.yaml_dir, 
-        file_types=["yaml", "txt"]
-    )
-    
+    F.empty_data_folder(folder=Conf.catalog.dump.yaml_dir, file_types=["yaml", "txt"])
+
     F.extract_zip_file_from_url(
         url=Conf.params.cricsheet_yaml_url,
         zip_file_path=Conf.catalog.temp.yaml_zip_file,
-        extract_file_path=Conf.catalog.dump.yaml_dir
+        extract_file_path=Conf.catalog.dump.yaml_dir,
     )
 
-    F.empty_data_folder(
-        folder=Conf.catalog.dump.json_dir, 
-        file_types=["yaml", "txt"]
-    )
+    F.empty_data_folder(folder=Conf.catalog.dump.json_dir, file_types=["yaml", "txt"])
 
     F.extract_zip_file_from_url(
         url=Conf.params.cricsheet_json_url,
         zip_file_path=Conf.catalog.temp.json_zip_file,
-        extract_file_path=Conf.catalog.dump.json_dir
+        extract_file_path=Conf.catalog.dump.json_dir,
     )
+
 
 @flow
 def remove_old_dump_files() -> pl.LazyFrame:
@@ -40,7 +33,11 @@ def remove_old_dump_files() -> pl.LazyFrame:
     raw_yaml_file_names = set([file.stem for file in raw_yaml_dir.glob("*.yaml")])
 
     file_names_to_remove = list(dump_yaml_file_names.intersection(raw_yaml_file_names))
-    files_to_remove = [file for file in dump_yaml_dir.glob("*.yaml") if file.stem in file_names_to_remove]
+    files_to_remove = [
+        file
+        for file in dump_yaml_dir.glob("*.yaml")
+        if file.stem in file_names_to_remove
+    ]
 
     F.remove_list_of_files(file_list=files_to_remove)
 
@@ -50,6 +47,7 @@ def remove_old_dump_files() -> pl.LazyFrame:
     df_new_dump_files.write_parquet(Conf.catalog.dump.new_dump_files)
 
     return df_new_dump_files.lazy()
+
 
 @flow(name="ingest_flow")
 def ingest_raw_data():
